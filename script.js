@@ -325,7 +325,7 @@ class SVGSpritesheetBuilder {
         let htmlExamples = '';
         if (Array.isArray(processedImages)) {
             htmlExamples = processedImages.map(img =>
-                `<i class="${name} ${name}-${img.name}" style="--vg:url(${name}.svg#${img.id})"></i>`
+                `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
             ).join('\n');
         }
 
@@ -498,6 +498,7 @@ This sprite was generated using SVG Spritesheet Builder.
 2. Use the sprite in your HTML:
    \`\`\`html
    <i class="${spriteName}-iconname ${spriteName}" style="--vg:url(${spriteName}.svg#i01)"></i>
+   <a class="${spriteName}-iconname ${spriteName}" href="${name}.svg#${img.id}" style="--vg:url(${spriteName}.svg#i01)">&#8203;</a>
    \`\`\`
 
 ## Available Icons
