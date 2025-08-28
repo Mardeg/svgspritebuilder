@@ -250,12 +250,14 @@ body {
     font-weight: 500;
 }
 
-#customSizeGroup select {
-    min-width: 70px;
+#customSizeGroup input[type="number"] {
+    width: 5em;
+    min-width: 0;
     padding: 4px 8px;
     border-radius: 4px;
     border: 1px solid #ddd;
     font-size: 1em;
+    margin-right: 1em;
 }
 
 input[type="range"] {
