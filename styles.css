@@ -319,7 +319,7 @@ input[type="range"] {
     margin: 0 auto;
 }
 
-.css-preview {
+.css-preview,.html-preview {
     margin-top: 2em;
     background: var(--color-bg-light);
     border-radius: var(--radius-small);
@@ -329,14 +329,14 @@ input[type="range"] {
     color: #333;
 }
 
-.css-preview h3 {
+.css-preview h3,.html-preview h3 {
     margin-top: 0;
     margin-bottom: 0.7em;
     font-size: 1.1em;
     color: var(--color-primary);
 }
 
-.css-preview pre {
+.css-preview pre,.html-preview pre {
     margin: 0;
     background: none;
     font-family: var(--font-mono);
