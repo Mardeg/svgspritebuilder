@@ -17,8 +17,7 @@ class SVGSpritesheetBuilder {
         this.previewCanvas = document.getElementById('previewCanvas');
         this.cssCode = document.getElementById('cssCode');
         this.toast = document.getElementById('toast');
-        
-        // Configuration inputs
+        // Config inputs
         this.spriteName = document.getElementById('spriteName');
         this.customWidth = document.getElementById('customWidth');
         this.customHeight = document.getElementById('customHeight');
@@ -26,56 +25,39 @@ class SVGSpritesheetBuilder {
         this.columns = document.getElementById('columns');
         this.sizingModeRadios = document.querySelectorAll('input[name="sizingMode"]');
         this.customSizeGroup = document.getElementById('customSizeGroup');
-        
         // Download buttons
         this.downloadSvg = document.getElementById('downloadSvg');
         this.downloadCss = document.getElementById('downloadCss');
         this.downloadZip = document.getElementById('downloadZip');
-        
         // Range value displays
         this.updateRangeValues();
     }
 
     bindEvents() {
-        // Upload events
         this.uploadArea.addEventListener('click', () => this.fileInput.click());
         this.browseBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             this.fileInput.click();
         });
         this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
-        
-        // Drag and drop
         this.uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
         this.uploadArea.addEventListener('dragleave', this.handleDragLeave.bind(this));
         this.uploadArea.addEventListener('drop', this.handleDrop.bind(this));
-        
-        // Clear button
         this.clearBtn.addEventListener('click', this.clearAllImages.bind(this));
-        
-        // Configuration changes
         this.spriteName.addEventListener('input', this.generatePreview.bind(this));
         this.customWidth.addEventListener('change', this.generatePreview.bind(this));
         this.customHeight.addEventListener('change', this.generatePreview.bind(this));
         this.spacing.addEventListener('input', this.generatePreview.bind(this));
         this.columns.addEventListener('input', this.generatePreview.bind(this));
-        
-        // Sizing mode radio buttons
         this.sizingModeRadios.forEach(radio => {
             radio.addEventListener('change', this.handleSizingModeChange.bind(this));
         });
-
-        // Show/hide custom size group on load
         window.addEventListener('DOMContentLoaded', () => {
             const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
             this.customSizeGroup.style.display = checkedRadio.value === 'custom' ? 'flex' : 'none';
         });
-        
-        // Range value updates
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
-        
-        // Download buttons
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
         this.downloadCss.addEventListener('click', this.downloadCSS.bind(this));
         this.downloadZip.addEventListener('click', this.downloadZIP.bind(this));
@@ -95,8 +77,7 @@ class SVGSpritesheetBuilder {
 
     handleSizingModeChange() {
         const selectedMode = document.querySelector('input[name="sizingMode"]:checked').value;
-        const isCustom = selectedMode === 'custom';
-        this.customSizeGroup.style.display = isCustom ? 'flex' : 'none';
+        this.customSizeGroup.style.display = selectedMode === 'custom' ? 'flex' : 'none';
         this.generatePreview();
     }
 
@@ -125,9 +106,7 @@ class SVGSpritesheetBuilder {
 
     async handleFiles(files) {
         if (!files || files.length === 0) return;
-        
         this.showToast('Processing images...', 'info');
-        
         for (const file of files) {
             if (this.isValidImageFile(file)) {
                 await this.processImage(file);
@@ -135,7 +114,6 @@ class SVGSpritesheetBuilder {
                 this.showToast(`Invalid file type: ${file.name}`, 'error');
             }
         }
-        
         this.updateUI();
         this.showToast(`Added ${files.length} image${files.length > 1 ? 's' : ''}`, 'success');
     }
@@ -159,8 +137,6 @@ class SVGSpritesheetBuilder {
                     width: null,
                     height: null
                 };
-                
-                // Detect dimensions based on file type
                 if (file.type === 'image/svg+xml') {
                     const dimensions = await this.getSVGDimensions(e.target.result);
                     imageData.width = dimensions.width;
@@ -170,7 +146,6 @@ class SVGSpritesheetBuilder {
                     imageData.width = dimensions.width;
                     imageData.height = dimensions.height;
                 }
-                
                 this.uploadedImages.push(imageData);
                 resolve();
             };
@@ -179,10 +154,7 @@ class SVGSpritesheetBuilder {
     }
 
     sanitizeFileName(fileName) {
-        return fileName
-            .replace(/\.[^/.]+$/, '') // Remove extension
-            .replace(/[^a-zA-Z0-9]/g, '_') // Replace non-alphanumeric with underscore
-            .toLowerCase();
+        return fileName.replace(/\.[^/.]+$/, '').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
     }
 
     async getSVGDimensions(dataUrl) {
@@ -193,14 +165,11 @@ class SVGSpritesheetBuilder {
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(svgString, 'image/svg+xml');
                 const svg = doc.querySelector('svg');
-                
                 if (svg) {
                     const width = svg.getAttribute('width');
                     const height = svg.getAttribute('height');
                     const viewBox = svg.getAttribute('viewBox');
-                    
-                    let dimensions = { width: 24, height: 24 }; // Default fallback
-                    
+                    let dimensions = { width: 24, height: 24 };
                     if (width && height) {
                         dimensions = {
                             width: parseInt(width) || 24,
@@ -215,7 +184,6 @@ class SVGSpritesheetBuilder {
                             };
                         }
                     }
-                    
                     resolve(dimensions);
                 } else {
                     resolve({ width: 24, height: 24 });
@@ -258,21 +226,17 @@ class SVGSpritesheetBuilder {
 
     renderImageGrid() {
         this.imageGrid.innerHTML = '';
-        
         this.uploadedImages.forEach(image => {
             const imageItem = document.createElement('div');
             imageItem.className = 'image-item';
-            
             imageItem.innerHTML = `
                 <img src="${image.data}" alt="${image.originalName}" class="image-preview">
                 <div class="image-name">${image.originalName}</div>
                 <div class="image-dimensions">${image.width}×${image.height}px</div>
                 <button class="remove-btn" data-id="${image.id}">×</button>
             `;
-            
             const removeBtn = imageItem.querySelector('.remove-btn');
             removeBtn.addEventListener('click', () => this.removeImage(image.id));
-            
             this.imageGrid.appendChild(imageItem);
         });
     }
@@ -291,14 +255,12 @@ class SVGSpritesheetBuilder {
 
     async generatePreview() {
         if (this.uploadedImages.length === 0) return;
-        
         const sizingMode = this.getSelectedSizingMode();
         let width, height;
         if (sizingMode === 'custom') {
             width = parseInt(this.customWidth.value, 10);
             height = parseInt(this.customHeight.value, 10);
         }
-
         const config = {
             name: this.spriteName.value || 'sprite',
             width: width,
@@ -307,18 +269,13 @@ class SVGSpritesheetBuilder {
             columns: parseInt(this.columns.value),
             sizingMode: sizingMode
         };
-        
         try {
             const { svg, css } = await this.createSpritesheet(config);
-            
             this.previewCanvas.innerHTML = svg;
             this.cssCode.textContent = css;
             this.previewSection.style.display = 'block';
-            
-            // Store generated content for downloads
             this.generatedSvg = svg;
             this.generatedCss = css;
-            
         } catch (error) {
             console.error('Error generating preview:', error);
             this.showToast('Error generating preview', 'error');
@@ -328,45 +285,37 @@ class SVGSpritesheetBuilder {
     async createSpritesheet(config) {
         const { name, width, height, spacing, columns, sizingMode } = config;
         const images = this.uploadedImages;
-        
         let processedImages;
         let spriteWidth;
         let spriteHeight;
-        
+
         if (sizingMode === 'original') {
-            // Use original dimensions layout
             processedImages = await this.calculateOriginalDimensionsLayout(images, spacing, columns, name);
             const bounds = this.calculateSpriteBounds(processedImages, spacing);
             spriteWidth = bounds.width;
             spriteHeight = bounds.height;
         } else if (sizingMode === 'custom') {
-            // Use custom width/height layout
             processedImages = await this.calculateCustomLayout(images, width, height, spacing, columns, name);
             const rows = Math.ceil(images.length / columns);
             spriteWidth = (width * columns) + (spacing * (columns - 1));
             spriteHeight = (height * rows) + (spacing * (rows - 1));
         }
-        
-        // Create SVG sprite
+
+        // SVG with <view> elements for fragment identifiers
         let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${spriteWidth}" height="${spriteHeight}" viewBox="0 0 ${spriteWidth} ${spriteHeight}">`;
-        
-        // Add each processed image
+
         processedImages.forEach(img => {
-            if (img.content) {
-                svgContent += img.content;
-            }
+            if (img.content) svgContent += img.content;
         });
-        
-        // Add view elements for each sprite (for easy reference)
+
         processedImages.forEach(img => {
             svgContent += `<view id="${name}-${img.name}-view" viewBox="${img.x} ${img.y} ${img.width} ${img.height}"/>`;
         });
-        
+
         svgContent += `</svg>`;
-        
-        // Generate CSS
+
         const css = this.generateCSS(name, processedImages, config);
-        
+
         return { svg: svgContent, css };
     }
 
@@ -376,35 +325,25 @@ class SVGSpritesheetBuilder {
         let currentY = 0;
         let rowHeight = 0;
         let currentColumn = 0;
-
         for (let index = 0; index < images.length; index++) {
             const image = images[index];
             const width = image.width || 24;
             const height = image.height || 24;
-
-            // Check if we need to start a new row
             if (currentColumn >= columns) {
                 currentX = 0;
                 currentY += rowHeight + spacing;
                 rowHeight = 0;
                 currentColumn = 0;
             }
-
             let imageContent = '';
-            
             if (image.type === 'image/svg+xml') {
-                // Handle SVG files with original dimensions
                 const svgDoc = this.parseSVG(image.data);
                 if (svgDoc) {
-                    imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${currentX}, ${currentY})">
-                        <g>${svgDoc}</g>
-                    </g>`;
+                    imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${currentX}, ${currentY})"><g>${svgDoc}</g></g>`;
                 }
             } else {
-                // Handle raster images with original dimensions - use width/height attributes
                 imageContent = `<image id="${spriteName}-${image.name}" x="${currentX}" y="${currentY}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
             }
-
             processedImages.push({
                 name: image.name,
                 x: currentX,
@@ -414,13 +353,10 @@ class SVGSpritesheetBuilder {
                 index: index,
                 content: imageContent
             });
-
-            // Update position for next image
             currentX += width + spacing;
             rowHeight = Math.max(rowHeight, height);
             currentColumn++;
         }
-
         return processedImages;
     }
 
@@ -431,26 +367,18 @@ class SVGSpritesheetBuilder {
                 const col = index % columns;
                 const x = col * (width + spacing);
                 const y = row * (height + spacing);
-                
                 let imageContent = '';
-                
                 if (image.type === 'image/svg+xml') {
-                    // Handle SVG files
                     const svgDoc = this.parseSVG(image.data);
                     if (svgDoc) {
-                        // Scale SVG to fit width/height
-                        imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${x}, ${y})">
-                            <g transform="scale(${width / 24}, ${height / 24})">${svgDoc}</g>
-                        </g>`;
+                        imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${x}, ${y})"><g transform="scale(${width / 24}, ${height / 24})">${svgDoc}</g></g>`;
                     }
                 } else {
-                    // Handle raster images with custom size - use width/height attributes
                     imageContent = `<image id="${spriteName}-${image.name}" x="${x}" y="${y}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
                 }
-                
                 return {
                     name: image.name,
-                    x, y, 
+                    x, y,
                     width: width,
                     height: height,
                     index,
@@ -464,21 +392,15 @@ class SVGSpritesheetBuilder {
         if (processedImages.length === 0) {
             return { width: 0, height: 0 };
         }
-
         let maxX = 0;
         let maxY = 0;
-
         processedImages.forEach(img => {
             const rightEdge = img.x + img.width;
             const bottomEdge = img.y + img.height;
             maxX = Math.max(maxX, rightEdge);
             maxY = Math.max(maxY, bottomEdge);
         });
-
-        return {
-            width: maxX,
-            height: maxY
-        };
+        return { width: maxX, height: maxY };
     }
 
     parseSVG(dataUrl) {
@@ -488,11 +410,7 @@ class SVGSpritesheetBuilder {
             const parser = new DOMParser();
             const doc = parser.parseFromString(svgString, 'image/svg+xml');
             const svg = doc.querySelector('svg');
-            
-            if (svg) {
-                // Remove the outer svg tag and return inner content
-                return svg.innerHTML;
-            }
+            if (svg) return svg.innerHTML;
         } catch (error) {
             console.error('Error parsing SVG:', error);
         }
@@ -500,21 +418,17 @@ class SVGSpritesheetBuilder {
     }
 
     generateCSS(spriteName, images, config) {
-        const { sizingMode } = config;
-        
-        let css = `/* SVG Sprite CSS */\n.${spriteName} {\n    display: inline-block;\n    background-image: url('${spriteName}.svg');\n    background-size: auto;\n    background-repeat: no-repeat;\n}\n\n`;
-        
+        let css = `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
         images.forEach(img => {
             const sizeCSS = `    width: ${img.width}px;\n    height: ${img.height}px;`;
-            css += `.${spriteName}-${img.name} {\n${sizeCSS}\n    background-position: -${img.x}px -${img.y}px;\n}\n\n`;
+            // Use fragment URL for each icon
+            css += `.${spriteName}-${img.name} {\n${sizeCSS}\n    background-image: url('${spriteName}.svg#${spriteName}-${img.name}-view');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
         });
-        
         return css;
     }
 
     downloadSVG() {
         if (!this.generatedSvg) return;
-        
         const blob = new Blob([this.generatedSvg], { type: 'image/svg+xml' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -522,13 +436,11 @@ class SVGSpritesheetBuilder {
         a.download = `${this.spriteName.value || 'sprite'}.svg`;
         a.click();
         URL.revokeObjectURL(url);
-        
         this.showToast('SVG downloaded successfully', 'success');
     }
 
     downloadCSS() {
         if (!this.generatedCss) return;
-        
         const blob = new Blob([this.generatedCss], { type: 'text/css' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -536,25 +448,15 @@ class SVGSpritesheetBuilder {
         a.download = `${this.spriteName.value || 'sprite'}.css`;
         a.click();
         URL.revokeObjectURL(url);
-        
         this.showToast('CSS downloaded successfully', 'success');
     }
 
     async downloadZIP() {
         if (!this.generatedSvg || !this.generatedCss) return;
-        
-        try {
-            // For now, download files separately
-            // In a production app, you'd use a proper ZIP library
-            this.downloadSVG();
-            setTimeout(() => this.downloadCSS(), 500);
-            
-            this.showToast('Files downloaded (SVG + CSS)', 'success');
-            
-        } catch (error) {
-            console.error('Error creating ZIP:', error);
-            this.showToast('Error creating download package', 'error');
-        }
+        // For now, download files separately
+        this.downloadSVG();
+        setTimeout(() => this.downloadCSS(), 500);
+        this.showToast('Files downloaded (SVG + CSS)', 'success');
     }
 
     generateReadme(spriteName) {
@@ -586,19 +488,16 @@ Generated on: ${new Date().toISOString()}
         this.toast.textContent = message;
         this.toast.className = `toast ${type}`;
         this.toast.classList.add('show');
-        
         setTimeout(() => {
             this.toast.classList.remove('show');
         }, 3000);
     }
 }
 
-// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
     new SVGSpritesheetBuilder();
 });
 
-// Add some utility functions for better user experience
 window.addEventListener('beforeunload', (e) => {
     const builder = window.spritesheetBuilder;
     if (builder && builder.uploadedImages.length > 0) {
@@ -607,13 +506,9 @@ window.addEventListener('beforeunload', (e) => {
         return e.returnValue;
     }
 });
-
-// Prevent default drag and drop on the document
 document.addEventListener('dragover', (e) => {
     e.preventDefault();
 });
-
 document.addEventListener('drop', (e) => {
     e.preventDefault();
 });
-
