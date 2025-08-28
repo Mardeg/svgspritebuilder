@@ -60,8 +60,19 @@ class SVGSpritesheetBuilder {
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
-        this.bgU.addEventListener('click', () => this.bgURL());
-        this.iSRC.addEventListener('click', () => this.imgSRC());
+        const previewButtons = document.querySelectorAll('.code-preview-btn');
+        previewButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                previewButtons.forEach(b => {
+                    b.classList.remove('btn-primary');
+                    b.classList.add('btn-secondary');
+                });
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-primary');
+                if (btn.id === 'bgU') this.bgURL();
+                if (btn.id === 'iSRC') this.imgSRC();
+            });
+        });
     }
 
     updateRangeValues() {
