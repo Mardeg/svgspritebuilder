@@ -28,8 +28,8 @@ class SVGSpritesheetBuilder {
         this.customSizeGroup = document.getElementById('customSizeGroup');
         // Download button
         this.downloadSvg = document.getElementById('downloadSvg');
-        this.bgURL = document.getElementById('bgURL');
-        this.imgSRC = document.getElementById('imgSRC');
+        this.bgU = document.getElementById('bgU');
+        this.iSRC = document.getElementById('iSRC');
         // Range value displays
         this.updateRangeValues();
     }
@@ -60,8 +60,8 @@ class SVGSpritesheetBuilder {
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
-        this.bgURL.addEventListener('click', this.bgURL.bind(this));
-        this.imgSRC.addEventListener('click', this.imgSRC.bind(this));
+        this.bgU.addEventListener('click', this.bgURL.bind(this));
+        this.iSRC.addEventListener('click', this.imgSRC.bind(this));
     }
 
     updateRangeValues() {
