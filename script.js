@@ -323,7 +323,7 @@ class SVGSpritesheetBuilder {
 
         // Generate example HTML code for custom mode
         let htmlExamples = '';
-        if (config.sizingMode === "custom" && Array.isArray(processedImages)) {
+        if (Array.isArray(processedImages)) {
             htmlExamples = processedImages.map(img =>
                 `<i class="${name} ${name}-${img.name}" style="--vg:url(${name}.svg#${img.id})"></i>`
             ).join('\n');
@@ -445,7 +445,7 @@ class SVGSpritesheetBuilder {
         } else {
             css += `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
             images.forEach(img => {
-                css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n    background-image: url('${spriteName}.svg#${img.id}');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
+                css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n\n`;
             });
         }
         return css;
