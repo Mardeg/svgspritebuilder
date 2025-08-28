@@ -56,31 +56,39 @@
                         <label for="spriteName">Sprite Name</label>
                         <input type="text" id="spriteName" value="sprite" placeholder="Enter sprite name">
                     </div>
-                    <div class="config-group">
-                        <label>Sizing Mode</label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="sizingMode" value="uniform" checked>
-                                <span class="radio-custom"></span>
-                                <span class="radio-text">Uniform Size</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="sizingMode" value="original">
-                                <span class="radio-custom"></span>
-                                <span class="radio-text">Original Dimensions</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="config-group" id="iconSizeGroup">
-                        <label for="iconSize">Icon Size</label>
-                        <select id="iconSize">
-                            <option value="16">16px</option>
-                            <option value="24" selected>24px</option>
-                            <option value="32">32px</option>
-                            <option value="48">48px</option>
-                            <option value="64">64px</option>
-                        </select>
-                    </div>
+<div class="config-group">
+    <label>Sizing Mode</label>
+    <div class="radio-group">
+        <label class="radio-option">
+            <input type="radio" name="sizingMode" value="custom" checked>
+            <span class="radio-custom"></span>
+            <span class="radio-text">Custom size</span>
+        </label>
+        <label class="radio-option">
+            <input type="radio" name="sizingMode" value="original">
+            <span class="radio-custom"></span>
+            <span class="radio-text">Original Dimensions</span>
+        </label>
+    </div>
+</div>
+<div class="config-group" id="customSizeGroup" style="display: flex;">
+    <label for="customWidth">Width</label>
+    <select id="customWidth">
+        <option value="16">16px</option>
+        <option value="24" selected>24px</option>
+        <option value="32">32px</option>
+        <option value="48">48px</option>
+        <option value="64">64px</option>
+    </select>
+    <label for="customHeight" style="margin-left:1em;">Height</label>
+    <select id="customHeight">
+        <option value="16">16px</option>
+        <option value="24" selected>24px</option>
+        <option value="32">32px</option>
+        <option value="48">48px</option>
+        <option value="64">64px</option>
+    </select>
+</div>
                     <div class="config-group">
                         <label for="spacing">Spacing</label>
                         <input type="range" id="spacing" min="0" max="20" value="4">
