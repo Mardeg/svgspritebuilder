@@ -60,8 +60,8 @@ class SVGSpritesheetBuilder {
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
-        this.bgU.addEventListener('click', this.bgURL.bind(this));
-        this.iSRC.addEventListener('click', this.imgSRC.bind(this));
+        this.bgU.addEventListener('click', () => this.bgURL());
+        this.iSRC.addEventListener('click', () => this.imgSRC());
     }
 
     updateRangeValues() {
