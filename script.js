@@ -33,35 +33,35 @@ class SVGSpritesheetBuilder {
         this.updateRangeValues();
     }
 
-     bindEvents() {
-         this.uploadArea.addEventListener('click', () => this.fileInput.click());
-         this.browseBtn.addEventListener('click', (e) => {
-             e.stopPropagation();
-             this.fileInput.click();
-         });
-         this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
-         this.uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
-         this.uploadArea.addEventListener('dragleave', this.handleDragLeave.bind(this));
-         this.uploadArea.addEventListener('drop', this.handleDrop.bind(this));
-         this.clearBtn.addEventListener('click', this.clearAllImages.bind(this));
-         this.spriteName.addEventListener('input', this.generatePreview.bind(this));
-         this.customWidth.addEventListener('input', this.generatePreview.bind(this));   // ← changed to 'input'
-         this.customHeight.addEventListener('input', this.generatePreview.bind(this));  // ← changed to 'input'
-         this.spacing.addEventListener('input', this.generatePreview.bind(this));
-         this.columns.addEventListener('input', this.generatePreview.bind(this));
-         this.sizingModeRadios.forEach(radio => {
-             radio.addEventListener('change', this.handleSizingModeChange.bind(this));
-         });
-         window.addEventListener('DOMContentLoaded', () => {
-             const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
-             this.customSizeGroup.style.display = checkedRadio.value === 'custom' ? 'flex' : 'none';
-         });
-         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
-         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
-         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
-         this.downloadCss.addEventListener('click', this.downloadCSS.bind(this));
-         this.downloadZip.addEventListener('click', this.downloadZIP.bind(this));
-     }
+    bindEvents() {
+        this.uploadArea.addEventListener('click', () => this.fileInput.click());
+        this.browseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.fileInput.click();
+        });
+        this.fileInput.addEventListener('change', (e) => this.handleFiles(e.target.files));
+        this.uploadArea.addEventListener('dragover', this.handleDragOver.bind(this));
+        this.uploadArea.addEventListener('dragleave', this.handleDragLeave.bind(this));
+        this.uploadArea.addEventListener('drop', this.handleDrop.bind(this));
+        this.clearBtn.addEventListener('click', this.clearAllImages.bind(this));
+        this.spriteName.addEventListener('input', this.generatePreview.bind(this));
+        this.customWidth.addEventListener('input', this.generatePreview.bind(this));
+        this.customHeight.addEventListener('input', this.generatePreview.bind(this));
+        this.spacing.addEventListener('input', this.generatePreview.bind(this));
+        this.columns.addEventListener('input', this.generatePreview.bind(this));
+        this.sizingModeRadios.forEach(radio => {
+            radio.addEventListener('change', this.handleSizingModeChange.bind(this));
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
+            this.customSizeGroup.style.display = checkedRadio.value === 'custom' ? 'flex' : 'none';
+        });
+        this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
+        this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
+        this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
+        this.downloadCss.addEventListener('click', this.downloadCSS.bind(this));
+        this.downloadZip.addEventListener('click', this.downloadZIP.bind(this));
+    }
 
     updateRangeValues() {
         this.updateRangeValue('spacing');
@@ -253,34 +253,34 @@ class SVGSpritesheetBuilder {
         this.showToast('All images cleared', 'info');
     }
 
-     async generatePreview() {
-         if (this.uploadedImages.length === 0) return;
-         const sizingMode = this.getSelectedSizingMode();
-         let width, height;
-         if (sizingMode === 'custom') {
-             width = Math.max(16, Math.min(1600, parseInt(this.customWidth.value, 10) || 24));   // ← enforce min/max
-             height = Math.max(16, Math.min(1600, parseInt(this.customHeight.value, 10) || 24)); // ← enforce min/max
-         }
-         const config = {
-             name: this.spriteName.value || 'sprite',
-             width: width,
-             height: height,
-             spacing: parseInt(this.spacing.value),
-             columns: parseInt(this.columns.value),
-             sizingMode: sizingMode
-         };
-         try {
-             const { svg, css } = await this.createSpritesheet(config);
-             this.previewCanvas.innerHTML = svg;
-             this.cssCode.textContent = css;
-             this.previewSection.style.display = 'block';
-             this.generatedSvg = svg;
-             this.generatedCss = css;
-         } catch (error) {
-             console.error('Error generating preview:', error);
-             this.showToast('Error generating preview', 'error');
-         }
-     }
+    async generatePreview() {
+        if (this.uploadedImages.length === 0) return;
+        const sizingMode = this.getSelectedSizingMode();
+        let width, height;
+        if (sizingMode === 'custom') {
+            width = Math.max(16, Math.min(1600, parseInt(this.customWidth.value, 10) || 24));
+            height = Math.max(16, Math.min(1600, parseInt(this.customHeight.value, 10) || 24));
+        }
+        const config = {
+            name: this.spriteName.value || 'sprite',
+            width: width,
+            height: height,
+            spacing: parseInt(this.spacing.value),
+            columns: parseInt(this.columns.value),
+            sizingMode: sizingMode
+        };
+        try {
+            const { svg, css } = await this.createSpritesheet(config);
+            this.previewCanvas.innerHTML = svg;
+            this.cssCode.textContent = css;
+            this.previewSection.style.display = 'block';
+            this.generatedSvg = svg;
+            this.generatedCss = css;
+        } catch (error) {
+            console.error('Error generating preview:', error);
+            this.showToast('Error generating preview', 'error');
+        }
+    }
 
     async createSpritesheet(config) {
         const { name, width, height, spacing, columns, sizingMode } = config;
@@ -309,7 +309,7 @@ class SVGSpritesheetBuilder {
         });
 
         processedImages.forEach(img => {
-            svgContent += `<view id="${name}-${img.name}-view" viewBox="${img.x} ${img.y} ${img.width} ${img.height}"/>`;
+            svgContent += `<view id="${img.id}" viewBox="${img.x} ${img.y} ${img.width} ${img.height}"/>`;
         });
 
         svgContent += `</svg>`;
@@ -329,6 +329,7 @@ class SVGSpritesheetBuilder {
             const image = images[index];
             const width = image.width || 24;
             const height = image.height || 24;
+            const id = (index + 1).toString().padStart(2, '0'); // "01", "02", ...
             if (currentColumn >= columns) {
                 currentX = 0;
                 currentY += rowHeight + spacing;
@@ -339,13 +340,14 @@ class SVGSpritesheetBuilder {
             if (image.type === 'image/svg+xml') {
                 const svgDoc = this.parseSVG(image.data);
                 if (svgDoc) {
-                    imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${currentX}, ${currentY})"><g>${svgDoc}</g></g>`;
+                    imageContent = `<g transform="translate(${currentX}, ${currentY})"><g>${svgDoc}</g></g>`;
                 }
             } else {
-                imageContent = `<image id="${spriteName}-${image.name}" x="${currentX}" y="${currentY}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
+                imageContent = `<image x="${currentX}" y="${currentY}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
             }
             processedImages.push({
                 name: image.name,
+                id,
                 x: currentX,
                 y: currentY,
                 width: width,
@@ -362,22 +364,24 @@ class SVGSpritesheetBuilder {
 
     async calculateCustomLayout(images, width, height, spacing, columns, spriteName) {
         return await Promise.all(
-            images.map(async (image, index) => {
+            images.map((image, index) => {
                 const row = Math.floor(index / columns);
                 const col = index % columns;
                 const x = col * (width + spacing);
                 const y = row * (height + spacing);
+                const id = (index + 1).toString().padStart(2, '0');
                 let imageContent = '';
                 if (image.type === 'image/svg+xml') {
                     const svgDoc = this.parseSVG(image.data);
                     if (svgDoc) {
-                        imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${x}, ${y})"><g transform="scale(${width / 24}, ${height / 24})">${svgDoc}</g></g>`;
+                        imageContent = `<g transform="translate(${x}, ${y})"><g transform="scale(${width / 24}, ${height / 24})">${svgDoc}</g></g>`;
                     }
                 } else {
-                    imageContent = `<image id="${spriteName}-${image.name}" x="${x}" y="${y}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
+                    imageContent = `<image x="${x}" y="${y}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
                 }
                 return {
                     name: image.name,
+                    id,
                     x, y,
                     width: width,
                     height: height,
@@ -419,11 +423,18 @@ class SVGSpritesheetBuilder {
 
     generateCSS(spriteName, images, config) {
         let css = `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
-        images.forEach(img => {
-            const sizeCSS = `    width: ${img.width}px;\n    height: ${img.height}px;`;
-            // Use fragment URL for each icon
-            css += `.${spriteName}-${img.name} {\n${sizeCSS}\n    background-image: url('${spriteName}.svg#${spriteName}-${img.name}-view');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
-        });
+        const { sizingMode, width, height } = config;
+
+        if (sizingMode === "custom") {
+            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n}\n\n`;
+            images.forEach(img => {
+                css += `.${spriteName}-${img.name} {\n    background-image: url('${spriteName}.svg#${img.id}');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
+            });
+        } else {
+            images.forEach(img => {
+                css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n    background-image: url('${spriteName}.svg#${img.id}');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
+            });
+        }
         return css;
     }
 
@@ -478,7 +489,7 @@ This sprite was generated using SVG Spritesheet Builder.
 
 ## Available Icons
 
-${this.uploadedImages.map(img => `- ${spriteName}-${img.name}`).join('\n')}
+${this.uploadedImages.map((img, i) => `- ${spriteName}-${img.name} (fragment: #${(i+1).toString().padStart(2,'0')})`).join('\n')}
 
 Generated on: ${new Date().toISOString()}
 `;
