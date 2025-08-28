@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Spritesheet Builder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 4C8 2.89543 8.89543 2 10 2H22C23.1046 2 24 2.89543 24 4V12C24 13.1046 23.1046 14 22 14H18L16 16L14 14H10C8.89543 14 8 13.1046 8 12V4Z" fill="currentColor" opacity="0.7"/>
+                    <path d="M4 12C4 10.8954 4.89543 10 6 10H8V12C8 14.2091 9.79086 16 12 16H14L16 18L18 16H20C22.2091 16 24 17.7909 24 20V24C24 26.2091 22.2091 28 20 28H10C7.79086 28 6 26.2091 6 24V20C6 18.8954 5.10457 18 4 18V12Z" fill="currentColor" opacity="0.9"/>
+                </svg>
+                <h1>SVG Spritesheet Builder</h1>
+            </div>
+            <p class="subtitle">Transform your images into optimized SVG spritesheets</p>
+        </header>
+
+        <main class="main">
+            <!-- Upload Area -->
+            <section class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <svg class="upload-icon" width="48" height="48" viewBox="0 0 48 48" fill="none">
+                            <path d="M24 8L32 16H28V28H20V16H16L24 8Z" fill="currentColor" opacity="0.6"/>
+                            <path d="M40 32V36C40 38.2091 38.2091 40 36 40H12C9.79086 40 8 38.2091 8 36V32" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+                        </svg>
+                        <h3>Drop images here or click to browse</h3>
+                        <p>Supports PNG, JPG, and SVG files</p>
+                        <button class="browse-btn" id="browseBtn">Choose Files</button>
+                    </div>
+                    <input type="file" id="fileInput" multiple accept="image/*,.svg" hidden>
+                </div>
+            </section>
+
+            <!-- Image Gallery -->
+            <section class="gallery-section" id="gallerySection" style="display: none;">
+                <div class="section-header">
+                    <h2>Uploaded Images</h2>
+                    <button class="clear-btn" id="clearBtn">Clear All</button>
+                </div>
+                <div class="image-grid" id="imageGrid"></div>
+            </section>
+
+            <!-- Configuration Panel -->
+            <section class="config-section" id="configSection" style="display: none;">
+                <div class="section-header">
+                    <h2>Spritesheet Configuration</h2>
+                </div>
+                <div class="config-grid">
+                    <div class="config-group">
+                        <label for="spriteName">Sprite Name</label>
+                        <input type="text" id="spriteName" value="sprite" placeholder="Enter sprite name">
+                    </div>
+                    <div class="config-group">
+                        <label>Sizing Mode</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="sizingMode" value="uniform" checked>
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Uniform Size</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="sizingMode" value="original">
+                                <span class="radio-custom"></span>
+                                <span class="radio-text">Original Dimensions</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="config-group" id="iconSizeGroup">
+                        <label for="iconSize">Icon Size</label>
+                        <select id="iconSize">
+                            <option value="16">16px</option>
+                            <option value="24" selected>24px</option>
+                            <option value="32">32px</option>
+                            <option value="48">48px</option>
+                            <option value="64">64px</option>
+                        </select>
+                    </div>
+                    <div class="config-group">
+                        <label for="spacing">Spacing</label>
+                        <input type="range" id="spacing" min="0" max="20" value="4">
+                        <span class="range-value">4px</span>
+                    </div>
+                    <div class="config-group">
+                        <label for="columns">Columns</label>
+                        <input type="range" id="columns" min="1" max="10" value="4">
+                        <span class="range-value">4</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Preview Section -->
+            <section class="preview-section" id="previewSection" style="display: none;">
+                <div class="section-header">
+                    <h2>Spritesheet Preview</h2>
+                    <div class="preview-actions">
+                        <button class="btn btn-secondary" id="downloadSvg">Download SVG</button>
+                        <button class="btn btn-secondary" id="downloadCss">Download CSS</button>
+                        <button class="btn btn-primary" id="downloadZip">Download All</button>
+                    </div>
+                </div>
+                <div class="preview-container">
+                    <div class="preview-canvas" id="previewCanvas"></div>
+                </div>
+                <div class="css-preview" id="cssPreview">
+                    <h3>Generated CSS</h3>
+                    <pre><code id="cssCode"></code></pre>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
