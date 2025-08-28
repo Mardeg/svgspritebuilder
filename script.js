@@ -26,10 +26,10 @@ class SVGSpritesheetBuilder {
         this.columns = document.getElementById('columns');
         this.sizingModeRadios = document.querySelectorAll('input[name="sizingMode"]');
         this.customSizeGroup = document.getElementById('customSizeGroup');
-        // Download buttons
+        // Download button
         this.downloadSvg = document.getElementById('downloadSvg');
-        this.downloadCss = document.getElementById('downloadCss');
-        this.downloadZip = document.getElementById('downloadZip');
+        this.bgURL = document.getElementById('bgURL');
+        this.imgSRC = document.getElementById('imgSRC');
         // Range value displays
         this.updateRangeValues();
     }
@@ -60,8 +60,8 @@ class SVGSpritesheetBuilder {
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
-        this.downloadCss.addEventListener('click', this.downloadCSS.bind(this));
-        this.downloadZip.addEventListener('click', this.downloadZIP.bind(this));
+        this.bgURL.addEventListener('click', this.bgURL.bind(this));
+        this.imgSRC.addEventListener('click', this.imgSRC.bind(this));
     }
 
     updateRangeValues() {
@@ -463,24 +463,10 @@ class SVGSpritesheetBuilder {
         this.showToast('SVG downloaded successfully', 'success');
     }
 
-    downloadCSS() {
-        if (!this.generatedCss) return;
-        const blob = new Blob([this.generatedCss], { type: 'text/css' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${this.spriteName.value || 'sprite'}.css`;
-        a.click();
-        URL.revokeObjectURL(url);
-        this.showToast('CSS downloaded successfully', 'success');
+    bgURL() {
     }
 
-    async downloadZIP() {
-        if (!this.generatedSvg || !this.generatedCss) return;
-        // For now, download files separately
-        this.downloadSVG();
-        setTimeout(() => this.downloadCSS(), 500);
-        this.showToast('Files downloaded (SVG + CSS)', 'success');
+    imgSRC() {
     }
 
     generateReadme(spriteName) {
