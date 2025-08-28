@@ -287,7 +287,7 @@ class SVGSpritesheetBuilder {
         }
     }
 
-    async createSpritesheet(config) {
+    async createSpritesheet(config,previewMode) {
         const { name, width, height, spacing, columns, sizingMode } = config;
         const images = this.uploadedImages;
         let processedImages;
@@ -319,7 +319,7 @@ class SVGSpritesheetBuilder {
 
         svgContent += `</svg>`;
 
-        const css = this.generateCSS(name, processedImages, config);
+        const css = this.generateCSS(name, processedImages, config, previewMode);
 
         // Generate example HTML code
         let htmlExamples = '';
@@ -437,10 +437,10 @@ class SVGSpritesheetBuilder {
         return null;
     }
 
-    generateCSS(spriteName, images, config, isIMG) {
+    generateCSS(spriteName, images, config, previewMode) {
         let css = '';
         const { sizingMode, width, height } = config;
-        if (isIMG) {
+        if (previewMode === 'imgSRC') {
             css += `/* No CSS needed */\n`;
         } else {
             if (sizingMode === "custom") {
@@ -470,6 +470,7 @@ class SVGSpritesheetBuilder {
     }
 
     bgURL(spriteName, images, config) {
+        
         this.generatePreview('bgURL');
     }
 
