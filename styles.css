@@ -659,3 +659,29 @@ select:focus {
     background: rgba(156, 175, 136, 0.3);
     color: var(--text-primary);
 }
+#customSizeGroup {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+#customSizeGroup label {
+    margin: 0 0.5em 0 0;
+    font-weight: 500;
+}
+
+#customSizeGroup select {
+    min-width: 70px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-size: 1em;
+}
+
+@media (max-width: 600px) {
+    #customSizeGroup {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5em;
+    }
+}
