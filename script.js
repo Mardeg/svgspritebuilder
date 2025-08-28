@@ -16,6 +16,7 @@ class SVGSpritesheetBuilder {
         this.previewSection = document.getElementById('previewSection');
         this.previewCanvas = document.getElementById('previewCanvas');
         this.cssCode = document.getElementById('cssCode');
+        this.htmlCode = document.getElementById('htmlCode'); // New for example HTML output
         this.toast = document.getElementById('toast');
         // Config inputs
         this.spriteName = document.getElementById('spriteName');
@@ -98,7 +99,7 @@ class SVGSpritesheetBuilder {
     handleDrop(e) {
         e.preventDefault();
         this.uploadArea.classList.remove('drag-over');
-        const files = Array.from(e.dataTransfer.files).filter(file => 
+        const files = Array.from(e.dataTransfer.files).filter(file =>
             file.type.startsWith('image/') || file.type === 'image/svg+xml'
         );
         this.handleFiles(files);
@@ -221,6 +222,7 @@ class SVGSpritesheetBuilder {
             this.gallerySection.style.display = 'none';
             this.configSection.style.display = 'none';
             this.previewSection.style.display = 'none';
+            if (this.htmlCode) this.htmlCode.textContent = '';
         }
     }
 
@@ -270,12 +272,15 @@ class SVGSpritesheetBuilder {
             sizingMode: sizingMode
         };
         try {
-            const { svg, css } = await this.createSpritesheet(config);
+            const { svg, css, htmlExamples } = await this.createSpritesheet(config);
             this.previewCanvas.innerHTML = svg;
             this.cssCode.textContent = css;
             this.previewSection.style.display = 'block';
             this.generatedSvg = svg;
             this.generatedCss = css;
+            if (this.htmlCode && htmlExamples) {
+                this.htmlCode.textContent = htmlExamples;
+            }
         } catch (error) {
             console.error('Error generating preview:', error);
             this.showToast('Error generating preview', 'error');
@@ -316,7 +321,15 @@ class SVGSpritesheetBuilder {
 
         const css = this.generateCSS(name, processedImages, config);
 
-        return { svg: svgContent, css };
+        // Generate example HTML code for custom mode
+        let htmlExamples = '';
+        if (config.sizingMode === "custom" && Array.isArray(processedImages)) {
+            htmlExamples = processedImages.map(img =>
+                `<i class="${name} ${name}-${img.name}" style="--vg:url(${name}.svg#${img.id})"></i>`
+            ).join('\n');
+        }
+
+        return { svg: svgContent, css, htmlExamples };
     }
 
     async calculateOriginalDimensionsLayout(images, spacing, columns, spriteName) {
@@ -422,15 +435,15 @@ class SVGSpritesheetBuilder {
     }
 
     generateCSS(spriteName, images, config) {
-        let css = `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
+        let css = '';
         const { sizingMode, width, height } = config;
 
         if (sizingMode === "custom") {
-            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n}\n\n`;
-            images.forEach(img => {
-                css += `.${spriteName}-${img.name} {\n    background-image: url('${spriteName}.svg#${img.id}');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
-            });
+            css += `/* SVG Sprite CSS for Custom size mode */\n`;
+            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
+            css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
         } else {
+            css += `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
             images.forEach(img => {
                 css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n    background-image: url('${spriteName}.svg#${img.id}');\n    background-repeat: no-repeat;\n    background-size: contain;\n}\n\n`;
             });
@@ -484,7 +497,7 @@ This sprite was generated using SVG Spritesheet Builder.
 
 2. Use the sprite in your HTML:
    \`\`\`html
-   <i class="${spriteName} ${spriteName}-iconname"></i>
+   <i class="${spriteName} ${spriteName}-iconname" style="--vg:url(${spriteName}.svg#i01)"></i>
    \`\`\`
 
 ## Available Icons
