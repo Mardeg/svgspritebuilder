@@ -475,6 +475,7 @@ class SVGSpritesheetBuilder {
             ).join('\n');
         }
         document.getElementById('htmlCode').textContent = htmlExamples;
+        return true;
     }
 
     imgSRC(spriteName, images, config) {
@@ -486,6 +487,7 @@ class SVGSpritesheetBuilder {
             ).join('\n');
         }
         document.getElementById('htmlCode').textContent = htmlExamples;
+        return true;
     }
 
     generateReadme(spriteName) {
