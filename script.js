@@ -497,7 +497,7 @@ This sprite was generated using SVG Spritesheet Builder.
 
 2. Use the sprite in your HTML:
    \`\`\`html
-   <i class="${spriteName} ${spriteName}-iconname" style="--vg:url(${spriteName}.svg#i01)"></i>
+   <i class="${spriteName}-iconname ${spriteName}" style="--vg:url(${spriteName}.svg#i01)"></i>
    \`\`\`
 
 ## Available Icons
