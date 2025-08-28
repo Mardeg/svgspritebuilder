@@ -20,11 +20,12 @@ class SVGSpritesheetBuilder {
         
         // Configuration inputs
         this.spriteName = document.getElementById('spriteName');
-        this.iconSize = document.getElementById('iconSize');
+        this.customWidth = document.getElementById('customWidth');
+        this.customHeight = document.getElementById('customHeight');
         this.spacing = document.getElementById('spacing');
         this.columns = document.getElementById('columns');
         this.sizingModeRadios = document.querySelectorAll('input[name="sizingMode"]');
-        this.iconSizeGroup = document.getElementById('iconSizeGroup');
+        this.customSizeGroup = document.getElementById('customSizeGroup');
         
         // Download buttons
         this.downloadSvg = document.getElementById('downloadSvg');
@@ -54,13 +55,20 @@ class SVGSpritesheetBuilder {
         
         // Configuration changes
         this.spriteName.addEventListener('input', this.generatePreview.bind(this));
-        this.iconSize.addEventListener('change', this.generatePreview.bind(this));
+        this.customWidth.addEventListener('change', this.generatePreview.bind(this));
+        this.customHeight.addEventListener('change', this.generatePreview.bind(this));
         this.spacing.addEventListener('input', this.generatePreview.bind(this));
         this.columns.addEventListener('input', this.generatePreview.bind(this));
         
         // Sizing mode radio buttons
         this.sizingModeRadios.forEach(radio => {
             radio.addEventListener('change', this.handleSizingModeChange.bind(this));
+        });
+
+        // Show/hide custom size group on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
+            this.customSizeGroup.style.display = checkedRadio.value === 'custom' ? 'flex' : 'none';
         });
         
         // Range value updates
@@ -87,12 +95,8 @@ class SVGSpritesheetBuilder {
 
     handleSizingModeChange() {
         const selectedMode = document.querySelector('input[name="sizingMode"]:checked').value;
-        const isUniform = selectedMode === 'uniform';
-        
-        // Show/hide icon size group based on selected mode
-        this.iconSizeGroup.style.display = isUniform ? 'flex' : 'none';
-        
-        // Regenerate preview with new sizing mode
+        const isCustom = selectedMode === 'custom';
+        this.customSizeGroup.style.display = isCustom ? 'flex' : 'none';
         this.generatePreview();
     }
 
@@ -288,12 +292,20 @@ class SVGSpritesheetBuilder {
     async generatePreview() {
         if (this.uploadedImages.length === 0) return;
         
+        const sizingMode = this.getSelectedSizingMode();
+        let width, height;
+        if (sizingMode === 'custom') {
+            width = parseInt(this.customWidth.value, 10);
+            height = parseInt(this.customHeight.value, 10);
+        }
+
         const config = {
             name: this.spriteName.value || 'sprite',
-            iconSize: parseInt(this.iconSize.value),
+            width: width,
+            height: height,
             spacing: parseInt(this.spacing.value),
             columns: parseInt(this.columns.value),
-            sizingMode: this.getSelectedSizingMode()
+            sizingMode: sizingMode
         };
         
         try {
@@ -314,7 +326,7 @@ class SVGSpritesheetBuilder {
     }
 
     async createSpritesheet(config) {
-        const { name, iconSize, spacing, columns, sizingMode } = config;
+        const { name, width, height, spacing, columns, sizingMode } = config;
         const images = this.uploadedImages;
         
         let processedImages;
@@ -327,12 +339,12 @@ class SVGSpritesheetBuilder {
             const bounds = this.calculateSpriteBounds(processedImages, spacing);
             spriteWidth = bounds.width;
             spriteHeight = bounds.height;
-        } else {
-            // Use uniform size layout
-            processedImages = await this.calculateUniformLayout(images, iconSize, spacing, columns, name);
+        } else if (sizingMode === 'custom') {
+            // Use custom width/height layout
+            processedImages = await this.calculateCustomLayout(images, width, height, spacing, columns, name);
             const rows = Math.ceil(images.length / columns);
-            spriteWidth = (iconSize * columns) + (spacing * (columns - 1));
-            spriteHeight = (iconSize * rows) + (spacing * (rows - 1));
+            spriteWidth = (width * columns) + (spacing * (columns - 1));
+            spriteHeight = (height * rows) + (spacing * (rows - 1));
         }
         
         // Create SVG sprite
@@ -412,13 +424,13 @@ class SVGSpritesheetBuilder {
         return processedImages;
     }
 
-    async calculateUniformLayout(images, iconSize, spacing, columns, spriteName) {
+    async calculateCustomLayout(images, width, height, spacing, columns, spriteName) {
         return await Promise.all(
             images.map(async (image, index) => {
                 const row = Math.floor(index / columns);
                 const col = index % columns;
-                const x = col * (iconSize + spacing);
-                const y = row * (iconSize + spacing);
+                const x = col * (width + spacing);
+                const y = row * (height + spacing);
                 
                 let imageContent = '';
                 
@@ -426,20 +438,21 @@ class SVGSpritesheetBuilder {
                     // Handle SVG files
                     const svgDoc = this.parseSVG(image.data);
                     if (svgDoc) {
+                        // Scale SVG to fit width/height
                         imageContent = `<g id="${spriteName}-${image.name}" transform="translate(${x}, ${y})">
-                            <g transform="scale(${iconSize / 24})">${svgDoc}</g>
+                            <g transform="scale(${width / 24}, ${height / 24})">${svgDoc}</g>
                         </g>`;
                     }
                 } else {
-                    // Handle raster images with uniform size - use width/height attributes
-                    imageContent = `<image id="${spriteName}-${image.name}" x="${x}" y="${y}" width="${iconSize}" height="${iconSize}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
+                    // Handle raster images with custom size - use width/height attributes
+                    imageContent = `<image id="${spriteName}-${image.name}" x="${x}" y="${y}" width="${width}" height="${height}" href="${image.data}" preserveAspectRatio="xMidYMid meet"/>`;
                 }
                 
                 return {
                     name: image.name,
                     x, y, 
-                    width: iconSize,
-                    height: iconSize,
+                    width: width,
+                    height: height,
                     index,
                     content: imageContent
                 };
@@ -492,10 +505,7 @@ class SVGSpritesheetBuilder {
         let css = `/* SVG Sprite CSS */\n.${spriteName} {\n    display: inline-block;\n    background-image: url('${spriteName}.svg');\n    background-size: auto;\n    background-repeat: no-repeat;\n}\n\n`;
         
         images.forEach(img => {
-            const sizeCSS = sizingMode === 'original' 
-                ? `    width: ${img.width}px;\n    height: ${img.height}px;`
-                : `    width: ${img.width}px;\n    height: ${img.height}px;`;
-                
+            const sizeCSS = `    width: ${img.width}px;\n    height: ${img.height}px;`;
             css += `.${spriteName}-${img.name} {\n${sizeCSS}\n    background-position: -${img.x}px -${img.y}px;\n}\n\n`;
         });
         
@@ -606,3 +616,4 @@ document.addEventListener('dragover', (e) => {
 document.addEventListener('drop', (e) => {
     e.preventDefault();
 });
+
