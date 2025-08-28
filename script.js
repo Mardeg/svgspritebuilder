@@ -467,10 +467,10 @@ class SVGSpritesheetBuilder {
     }
 
     bgURL(spriteName, images, config) {
-        generateCSS(name, processedImages, config);
+        this.generateCSS(spriteName, images, config);
         let htmlExamples = '';
-        if (Array.isArray(processedImages)) {
-            htmlExamples = processedImages.map(img =>
+        if (Array.isArray(images)) {
+            htmlExamples = images.map(img =>
                 `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
             ).join('\n');
         }
@@ -479,10 +479,10 @@ class SVGSpritesheetBuilder {
     }
 
     imgSRC(spriteName, images, config) {
-        generateCSS(name, processedImages, config, true);
+        this.generateCSS(spriteName, images, config, true);
         let htmlExamples = '';
-        if (Array.isArray(processedImages)) {
-            htmlExamples = processedImages.map(img =>
+        if (Array.isArray(images)) {
+            htmlExamples = images.map(img =>
                 `<img width="${img.width}px>" height="${img.height}px" src="${name}.svg#${img.id}">`
             ).join('\n');
         }
