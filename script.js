@@ -255,7 +255,7 @@ class SVGSpritesheetBuilder {
         this.showToast('All images cleared', 'info');
     }
 
-    async generatePreview() {
+    async generatePreview(previewMode = 'bgURL') {
         if (this.uploadedImages.length === 0) return;
         const sizingMode = this.getSelectedSizingMode();
         let width, height;
@@ -272,7 +272,7 @@ class SVGSpritesheetBuilder {
             sizingMode: sizingMode
         };
         try {
-            const { svg, css, htmlExamples } = await this.createSpritesheet(config);
+            const { svg, css, htmlExamples } = await this.createSpritesheet(config,previewMode);
             this.previewCanvas.innerHTML = svg;
             this.cssCode.textContent = css;
             this.previewSection.style.display = 'block';
@@ -323,12 +323,15 @@ class SVGSpritesheetBuilder {
 
         // Generate example HTML code
         let htmlExamples = '';
-        if (Array.isArray(processedImages)) {
+        if (previewMode === 'imgSRC') {
+            htmlExamples = processedImages.map(img =>
+                `<img width="${img.width}" height="${img.height}" src="${name}.svg#${img.id}">`
+        ).join('\n');
+        } else {
             htmlExamples = processedImages.map(img =>
                 `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
             ).join('\n');
         }
-
         return { svg: svgContent, css, htmlExamples };
     }
 
@@ -467,27 +470,11 @@ class SVGSpritesheetBuilder {
     }
 
     bgURL(spriteName, images, config) {
-        this.generateCSS(spriteName, images, config);
-        let htmlExamples = '';
-        if (Array.isArray(images)) {
-            htmlExamples = images.map(img =>
-                `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
-            ).join('\n');
-        }
-        document.getElementById('htmlCode').textContent = htmlExamples;
-        return true;
+        this.generatePreview('bgURL');
     }
 
     imgSRC(spriteName, images, config) {
-        this.generateCSS(spriteName, images, config, true);
-        let htmlExamples = '';
-        if (Array.isArray(images)) {
-            htmlExamples = images.map(img =>
-                `<img width="${img.width}px>" height="${img.height}px" src="${name}.svg#${img.id}">`
-            ).join('\n');
-        }
-        document.getElementById('htmlCode').textContent = htmlExamples;
-        return true;
+        this.generatePreview('imgSRC');
     }
 
     generateReadme(spriteName) {
