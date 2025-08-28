@@ -321,7 +321,7 @@ class SVGSpritesheetBuilder {
 
         const css = this.generateCSS(name, processedImages, config);
 
-        // Generate example HTML code for custom mode
+        // Generate example HTML code
         let htmlExamples = '';
         if (Array.isArray(processedImages)) {
             htmlExamples = processedImages.map(img =>
@@ -434,19 +434,22 @@ class SVGSpritesheetBuilder {
         return null;
     }
 
-    generateCSS(spriteName, images, config) {
+    generateCSS(spriteName, images, config, isIMG) {
         let css = '';
         const { sizingMode, width, height } = config;
-
-        if (sizingMode === "custom") {
-            css += `/* SVG Sprite CSS for Custom size mode */\n`;
-            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
-            css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
+        if (isIMG) {
+            css += `/* No CSS needed */\n`;
         } else {
-            css += `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
-            images.forEach(img => {
-                css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n\n`;
-            });
+            if (sizingMode === "custom") {
+                css += `/* SVG Sprite CSS for Custom size mode */\n`;
+                css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
+                css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
+            } else {
+                css += `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
+                images.forEach(img => {
+                    css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n\n`;
+                });
+            }
         }
         return css;
     }
@@ -463,10 +466,26 @@ class SVGSpritesheetBuilder {
         this.showToast('SVG downloaded successfully', 'success');
     }
 
-    bgURL() {
+    bgURL(spriteName, images, config) {
+        generateCSS(name, processedImages, config);
+        let htmlExamples = '';
+        if (Array.isArray(processedImages)) {
+            htmlExamples = processedImages.map(img =>
+                `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
+            ).join('\n');
+        }
+        document.getElementById('htmlCode').textContent = htmlExamples;
     }
 
-    imgSRC() {
+    imgSRC(spriteName, images, config) {
+        generateCSS(name, processedImages, config, true);
+        let htmlExamples = '';
+        if (Array.isArray(processedImages)) {
+            htmlExamples = processedImages.map(img =>
+                `<img width="${img.width}px>" height="${img.height}px" src="${name}.svg#${img.id}">`
+            ).join('\n');
+        }
+        document.getElementById('htmlCode').textContent = htmlExamples;
     }
 
     generateReadme(spriteName) {
@@ -476,15 +495,12 @@ This sprite was generated using SVG Spritesheet Builder.
 
 ## Usage
 
-1. Include the CSS file in your project:
-   \`\`\`html
-   <link rel="stylesheet" href="${spriteName}.css">
-   \`\`\`
+1. Include the CSS code (if needed) in your project.
 
 2. Use the sprite in your HTML:
    \`\`\`html
-   <i class="${spriteName}-iconname ${spriteName}" style="--vg:url(${spriteName}.svg#i01)"></i>
-   <a class="${spriteName}-iconname ${spriteName}" href="${name}.svg#${img.id}" style="--vg:url(${spriteName}.svg#i01)">&#8203;</a>
+   <a class="${spriteName}-iconname ${spriteName}" href="${spriteName}.svg#i01" style="--vg:url(${spriteName}.svg#i01)">&#8203;</a>
+   <img src="${spriteName}.svg#01">
    \`\`\`
 
 ## Available Icons
