@@ -289,8 +289,8 @@ class SVGSpritesheetBuilder {
         const sizingMode = this.getSelectedSizingMode();
         let width, height;
         if (sizingMode === 'custom') {
-            width = Math.max(16, Math.min(1600, parseInt(this.customWidth.value, 10) || 24));
-            height = Math.max(16, Math.min(1600, parseInt(this.customHeight.value, 10) || 24));
+            width = Math.max(4, Math.min(4096, parseInt(this.customWidth.value, 10) || 24));
+            height = Math.max(4, Math.min(4096, parseInt(this.customHeight.value, 10) || 24));
         }
         const config = {
             name: this.spriteName.value || 'sprite',
