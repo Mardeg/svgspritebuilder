@@ -129,6 +129,7 @@ class SVGSpritesheetBuilder {
     async handleFiles(files) {
         if (!files || files.length === 0) return;
         this.showToast('Processing images...', 'info');
+        const wasEmpty = this.uploadedImages.length === 0;
         for (const file of files) {
             if (this.isValidImageFile(file)) {
                 await this.processImage(file);
@@ -136,10 +137,17 @@ class SVGSpritesheetBuilder {
                 this.showToast(`Invalid file type: ${file.name}`, 'error');
             }
         }
+        // If this was the first batch and we have at least one image, set customWidth/customHeight
+        if (wasEmpty && this.uploadedImages.length > 0) {
+            const firstImg = this.uploadedImages[0];
+            if (firstImg.width && firstImg.height) {
+                this.customWidth.value = firstImg.width;
+                this.customHeight.value = firstImg.height;
+            }
+        }
         this.updateUI();
         this.showToast(`Added ${files.length} image${files.length > 1 ? 's' : ''}`, 'success');
     }
-
     isValidImageFile(file) {
         const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml'];
         return validTypes.includes(file.type);
