@@ -53,10 +53,15 @@ class SVGSpritesheetBuilder {
         this.sizingModeRadios.forEach(radio => {
             radio.addEventListener('change', this.handleSizingModeChange.bind(this));
         });
-        window.addEventListener('DOMContentLoaded', () => {
-            const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
-            this.customSizeGroup.style.display = checkedRadio.value === 'custom' ? 'flex' : 'none';
-        });
+    window.addEventListener('DOMContentLoaded', () => {
+        const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
+    // Always show the group
+        this.customSizeGroup.style.display = 'flex';
+    // Disable if not custom
+        const shouldDisable = checkedRadio.value !== 'custom';
+        this.customWidth.disabled = shouldDisable;
+        this.customHeight.disabled = shouldDisable;
+});
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
@@ -89,7 +94,12 @@ class SVGSpritesheetBuilder {
 
     handleSizingModeChange() {
         const selectedMode = document.querySelector('input[name="sizingMode"]:checked').value;
-        this.customSizeGroup.style.display = selectedMode === 'custom' ? 'flex' : 'none';
+    // Disable width/height inputs instead of hiding their group
+        const shouldDisable = selectedMode !== 'custom';
+        this.customWidth.disabled = shouldDisable;
+        this.customHeight.disabled = shouldDisable;
+    // Always show the customSizeGroup so layout remains stable
+        this.customSizeGroup.style.display = 'flex';
         this.generatePreview();
     }
 
