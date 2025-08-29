@@ -148,11 +148,18 @@ class SVGSpritesheetBuilder {
         this.updateUI();
         this.showToast(`Added ${files.length} image${files.length > 1 ? 's' : ''}`, 'success');
     }
-    isValidImageFile(file) {
-        const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml'];
-        return validTypes.includes(file.type);
-    }
-
+isValidImageFile(file) {
+    const validTypes = [
+        'image/png',
+        'image/jpeg',
+        'image/jpg',
+        'image/gif',
+        'image/svg+xml',
+        'image/webp',
+        'image/avif'
+    ];
+    return validTypes.includes(file.type);
+}
     async processImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
