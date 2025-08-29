@@ -61,8 +61,8 @@
                         <input type="text" id="spriteName" value="sprite" placeholder="Enter sprite name">
                     </div>
 <div class="config-group">
-    <label>Sizing Mode</label>
-    <div class="radio-group">
+    <label for="sizingoptions">Sizing Mode</label>
+    <fieldset class="radio-group" id="sizingoptions">
         <label class="radio-option">
             <input type="radio" name="sizingMode" value="custom" checked>
             <span class="radio-custom"></span>
@@ -73,7 +73,7 @@
             <span class="radio-custom"></span>
             <span class="radio-text">Original Dimensions</span>
         </label>
-    </div>
+    </fieldset>
 </div>
 <div class="config-group" id="customSizeGroup" style="display: flex;">
     <label for="customWidth">Width (px)</label>
