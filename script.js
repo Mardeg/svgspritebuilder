@@ -328,18 +328,17 @@ class SVGSpritesheetBuilder {
         }
 
         // SVG with <view> elements for fragment identifiers
-        let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${spriteWidth}" height="${spriteHeight}" viewBox="0 0 ${spriteWidth} ${spriteHeight}">`;
+        let svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${spriteWidth}" height="${spriteHeight}" viewBox="0 0 ${spriteWidth} ${spriteHeight}">\n`;
 
         processedImages.forEach(img => {
-            if (img.content) svgContent += img.content;
+            if (img.content) svgContent += img.content + '\n';
         });
 
         processedImages.forEach(img => {
-            svgContent += `<view id="${img.id}" viewBox="${img.x} ${img.y} ${img.width} ${img.height}"/>`;
+            svgContent += `<view id="${img.id}" viewBox="${img.x} ${img.y} ${img.width} ${img.height}"/>\n`;
         });
 
         svgContent += `</svg>`;
-
         const css = this.generateCSS(name, processedImages, config, previewMode);
 
         // Generate example HTML code
