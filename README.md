@@ -1,6 +1,7 @@
 # SVG Spritesheet Builder
 
 User-friendly web application for creating SVG spritesheets from uploaded images.
+
 Live version at https://svgspritebuilder.pages.dev/
 
 ## Features
