@@ -421,6 +421,13 @@ input[type="range"] {
 .toast.info {
     background: var(--color-primary);
 }
+.image-item.drag-over {
+    border: 2px dashed #007bff;
+    background: #e7f1ff;
+}
+.image-item.dragging {
+    opacity: 0.5;
+}
 
 /* --- Responsive --- */
 @media (max-width: 700px) {
