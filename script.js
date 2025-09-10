@@ -3,6 +3,8 @@ class SVGSpritesheetBuilder {
         this.uploadedImages = [];
         this.initializeElements();
         this.bindEvents();
+        // Drag and drop state
+        this.draggedIndex = undefined; // <-- Added for drag state
     }
 
     initializeElements() {
@@ -53,15 +55,15 @@ class SVGSpritesheetBuilder {
         this.sizingModeRadios.forEach(radio => {
             radio.addEventListener('change', this.handleSizingModeChange.bind(this));
         });
-    window.addEventListener('DOMContentLoaded', () => {
-        const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
-    // Always show the group
-        this.customSizeGroup.style.display = 'flex';
-    // Disable if not custom
-        const shouldDisable = checkedRadio.value !== 'custom';
-        this.customWidth.disabled = shouldDisable;
-        this.customHeight.disabled = shouldDisable;
-});
+        window.addEventListener('DOMContentLoaded', () => {
+            const checkedRadio = document.querySelector('input[name="sizingMode"]:checked');
+            // Always show the group
+            this.customSizeGroup.style.display = 'flex';
+            // Disable if not custom
+            const shouldDisable = checkedRadio.value !== 'custom';
+            this.customWidth.disabled = shouldDisable;
+            this.customHeight.disabled = shouldDisable;
+        });
         this.spacing.addEventListener('input', () => this.updateRangeValue('spacing'));
         this.columns.addEventListener('input', () => this.updateRangeValue('columns'));
         this.downloadSvg.addEventListener('click', this.downloadSVG.bind(this));
@@ -94,11 +96,11 @@ class SVGSpritesheetBuilder {
 
     handleSizingModeChange() {
         const selectedMode = document.querySelector('input[name="sizingMode"]:checked').value;
-    // Disable width/height inputs instead of hiding their group
+        // Disable width/height inputs instead of hiding their group
         const shouldDisable = selectedMode !== 'custom';
         this.customWidth.disabled = shouldDisable;
         this.customHeight.disabled = shouldDisable;
-    // Always show the customSizeGroup so layout remains stable
+        // Always show the customSizeGroup so layout remains stable
         this.customSizeGroup.style.display = 'flex';
         this.generatePreview();
     }
@@ -148,18 +150,20 @@ class SVGSpritesheetBuilder {
         this.updateUI();
         this.showToast(`Added ${files.length} image${files.length > 1 ? 's' : ''}`, 'success');
     }
-isValidImageFile(file) {
-    const validTypes = [
-        'image/png',
-        'image/jpeg',
-        'image/jpg',
-        'image/gif',
-        'image/svg+xml',
-        'image/webp',
-        'image/avif'
-    ];
-    return validTypes.includes(file.type);
-}
+
+    isValidImageFile(file) {
+        const validTypes = [
+            'image/png',
+            'image/jpeg',
+            'image/jpg',
+            'image/gif',
+            'image/svg+xml',
+            'image/webp',
+            'image/avif'
+        ];
+        return validTypes.includes(file.type);
+    }
+
     async processImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -264,9 +268,11 @@ isValidImageFile(file) {
 
     renderImageGrid() {
         this.imageGrid.innerHTML = '';
-        this.uploadedImages.forEach(image => {
+        this.uploadedImages.forEach((image, index) => {
             const imageItem = document.createElement('div');
             imageItem.className = 'image-item';
+            imageItem.setAttribute('draggable', 'true'); // <-- For drag and drop
+            imageItem.setAttribute('data-index', index); // <-- For reference in DnD
             imageItem.innerHTML = `
                 <img src="${image.data}" alt="${image.originalName}" class="image-preview">
                 <div class="image-name">${image.originalName}</div>
@@ -275,9 +281,65 @@ isValidImageFile(file) {
             `;
             const removeBtn = imageItem.querySelector('.remove-btn');
             removeBtn.addEventListener('click', () => this.removeImage(image.id));
+
+            // --- Drag and drop event listeners ---
+            imageItem.addEventListener('dragstart', (e) => this.handleDragStart(e, index));
+            imageItem.addEventListener('dragover', (e) => this.handleDragOverThumbnail(e, index));
+            imageItem.addEventListener('drop', (e) => this.handleDropThumbnail(e, index));
+            imageItem.addEventListener('dragend', (e) => this.handleDragEnd(e));
+            imageItem.addEventListener('dragleave', (e) => this.handleDragLeaveThumbnail(e, index));
+            // --- End DnD ---
+
             this.imageGrid.appendChild(imageItem);
         });
     }
+
+    // --- Drag-and-drop handlers for reordering ---
+    handleDragStart(e, index) {
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index);
+        this.draggedIndex = index;
+        e.target.classList.add('dragging');
+    }
+
+    handleDragOverThumbnail(e, overIndex) {
+        e.preventDefault(); // Needed to allow drop
+        e.dataTransfer.dropEffect = 'move';
+        const target = e.target.closest('.image-item');
+        if (target) target.classList.add('drag-over');
+    }
+
+    handleDropThumbnail(e, dropIndex) {
+        e.preventDefault();
+        const fromIndex = this.draggedIndex;
+        if (typeof fromIndex === 'undefined' || fromIndex === dropIndex) {
+            this.clearDragOver();
+            return;
+        }
+
+        // Move the image in the array
+        const movedImage = this.uploadedImages.splice(fromIndex, 1)[0];
+        this.uploadedImages.splice(dropIndex, 0, movedImage);
+
+        this.clearDragOver();
+        this.updateUI();
+    }
+
+    handleDragEnd(e) {
+        this.draggedIndex = undefined;
+        this.clearDragOver();
+    }
+
+    handleDragLeaveThumbnail(e, index) {
+        const target = e.target.closest('.image-item');
+        if (target) target.classList.remove('drag-over');
+    }
+
+    clearDragOver() {
+        const items = this.imageGrid.querySelectorAll('.image-item');
+        items.forEach(item => item.classList.remove('drag-over', 'dragging'));
+    }
+    // --- End drag-and-drop handlers ---
 
     removeImage(imageId) {
         this.uploadedImages = this.uploadedImages.filter(img => img.id !== imageId);
@@ -505,7 +567,6 @@ isValidImageFile(file) {
     }
 
     bgURL(spriteName, images, config) {
-        
         this.generatePreview('bgURL');
     }
 
