@@ -422,7 +422,7 @@ class SVGSpritesheetBuilder {
         let htmlExamples = '';
         if (previewMode === 'imgSRC') {
             htmlExamples = processedImages.map(img =>
-                `<img width="${img.width}" height="${img.height}" src="${name}.svg#${img.id}">`
+                `<img width="${img.width}" height="${img.height}" src="${name}.svg#${img.id}" alt="${img.name}">`
             ).join('\n');
         } else if (sizingMode === "original") {
             htmlExamples = processedImages.map(img =>
