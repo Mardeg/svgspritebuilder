@@ -426,7 +426,7 @@ class SVGSpritesheetBuilder {
             ).join('\n');
         } else if (sizingMode === "original") {
             htmlExamples = processedImages.map(img =>
-                `<a href="${name}.svg#${img.id}" style="width:${img.width}px;height:${img.height}px;display:inline-block">&#8203;</a>`
+                `<a href="${name}.svg#${img.id}" style="width:${img.width}px;height:${img.height}px">&#8203;</a>`
             ).join('\n');
         } else {
             htmlExamples = processedImages.map(img =>
@@ -545,10 +545,10 @@ class SVGSpritesheetBuilder {
             css += `/* No CSS needed */\n`;
         } else if (sizingMode === "custom") {
             css += `/* SVG Sprite CSS for Custom size mode */\n`;
-            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
+            css += `[class^="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
             css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
         } else if (sizingMode === "original") {
-            css += `a[href$="${spriteName}"] {\n    display: inline-block;\n}\n\n`;
+            css += `a[href^="${spriteName}"] {\n    display: inline-block;\n}\n\n`;
         }
         return css;
     }
