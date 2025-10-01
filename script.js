@@ -423,7 +423,11 @@ class SVGSpritesheetBuilder {
         if (previewMode === 'imgSRC') {
             htmlExamples = processedImages.map(img =>
                 `<img width="${img.width}" height="${img.height}" src="${name}.svg#${img.id}">`
-        ).join('\n');
+            ).join('\n');
+        } else if (sizingMode === "original") {
+            htmlExamples = processedImages.map(img =>
+                `<a href="${name}.svg#${img.id}" style="width:${img.width}px;height:${img.height}px;display:inline-block">&#8203;</a>`
+            ).join('\n');
         } else {
             htmlExamples = processedImages.map(img =>
                 `<a class="${name}-${img.name} ${name}" href="${name}.svg#${img.id}" style="--vg:url(${name}.svg#${img.id})">&#8203;</a>`
@@ -539,17 +543,12 @@ class SVGSpritesheetBuilder {
         const { sizingMode, width, height } = config;
         if (previewMode === 'imgSRC') {
             css += `/* No CSS needed */\n`;
-        } else {
-            if (sizingMode === "custom") {
-                css += `/* SVG Sprite CSS for Custom size mode */\n`;
-                css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
-                css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
-            } else {
-                css += `/* SVG Sprite CSS using <view> fragments */\n.${spriteName} {\n    display: inline-block;\n}\n\n`;
-                images.forEach(img => {
-                    css += `.${spriteName}-${img.name} {\n    width: ${img.width}px;\n    height: ${img.height}px;\n\n`;
-                });
-            }
+        } else if (sizingMode === "custom") {
+            css += `/* SVG Sprite CSS for Custom size mode */\n`;
+            css += `[class$="${spriteName}-"] {\n    width: ${width}px;\n    height: ${height}px;\n    background: cover no-repeat var(--vg);\n}\n\n`;
+            css += `/* Example usage: Each element must set --vg style for its fragment. */\n`;
+        } else if (sizingMode === "original") {
+            css += `a[href$="${spriteName}"] {\n    display: inline-block;\n}\n\n`;
         }
         return css;
     }
