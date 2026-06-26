@@ -29,3 +29,5 @@ Live version at https://svgspritebuilder.pages.dev/
 - Client-side processing for privacy
 - Accessible with proper keyboard navigation
 - Optimized SVG output with clean CSS generation
+
+[![Star History Chart](https://starhistory.link/Mardeg/svgspritebuilder.svg?theme=cyan)](https://starhistory.link/Mardeg/svgspritebuilder)
