@@ -90,18 +90,21 @@ function updateLiveColors() {
         <option value="H">H (High - ~30% safety threshold)</option>
     </select>
 
-    <label for="qrSize">Print Dimensions (Pixels Width/Height)</label>
+    <label for="qrSize">Print Dimensions (sans outer quiet zone)</label>
     <input type="number" id="qrSize" value="500" min="10" max="4000">
 
-    <!-- ADDED: Dual Colour Selectors on One Line -->
-    <div style="display: flex; gap: 15px; margin: 0.5rem 0 1rem 0;">
-        <div style="flex: 1;">
-            <label for="qrFg" style="margin-bottom: 0.2rem;">Foreground (QR)</label>
-            <input type="color" id="qrFg" value="#000000" style="width: 100%; height: 35px; padding: 0; cursor: pointer;" oninput="updateLiveColors()">
+    <div style="display: flex; gap: 15px; margin: 0.5rem 0 1rem 0; align-items: flex-end; width: 100%; box-sizing: border-box;">
+        <div style="width: 45%; display: flex; flex-direction: column;">
+            <label for="qrFg" style="margin-bottom: 0.2rem; display: block;">Foreground (QR)</label>
+            <input type="color" id="qrFg" value="#000000" style="width: 100%; height: 35px; display: block; padding: 0; border: none; cursor: pointer;" oninput="updateLiveColors()">
         </div>
-        <div style="flex: 1;">
-            <label for="qrBg" style="margin-bottom: 0.2rem;">Background</label>
-            <input type="color" id="qrBg" value="#ffffff" style="width: 100%; height: 35px; padding: 0; cursor: pointer;" oninput="updateLiveColors()">
+        <div style="width: 10%; display: flex; justify-content: center;">
+            <button type="button" style="font-size:x-large;height: 35px; width: 100%; min-width: 35px; padding: 0; cursor: pointer; box-sizing: border-box"
+            onclick="[document.getElementById('qrFg').value, document.getElementById('qrBg').value] = [document.getElementById('qrBg').value, document.getElementById('qrFg').value]; if(document.getElementById('outputArea').style.display === 'block')updateLiveColors();">⇄</button>
+        </div>
+        <div style="width: 45%; display: flex; flex-direction: column;">
+            <label for="qrBg" style="margin-bottom: 0.2rem; display: block;">Background</label>
+            <input type="color" id="qrBg" value="#ffffff" style="width: 100%; height: 35px; display: block; padding: 0; border: none; cursor: pointer;" oninput="updateLiveColors()">
         </div>
     </div>
     <input type="reset" value="Defaults" tabindex="-1" style="pointer-events:none;visibility:hidden">
@@ -118,7 +121,7 @@ function buildTruePixelQR() {
     let textData = document.getElementById('qrText').value;
     const eccLevel = document.getElementById('qrEcc').value;
     const targetSize = parseInt(document.getElementById('qrSize').value, 10) || 500;
-    let padding = targetSize / 33;
+    let padding = targetSize / 12.5;
     const totalSize = Math.ceil(targetSize + (padding * 2));
     
     if (!textData) return alert("Please specify input URL text data first.");
