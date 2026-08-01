@@ -71,6 +71,18 @@ function updateLiveColors() {
         };
     }
 }
+function escapeHTML(str) {
+    return str.replace(/[&<>"']/g, function(match) {
+        const escapeMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#x27;'
+        };
+        return escapeMap[match];
+    });
+}
     </script>
 </head>
 <body>
@@ -80,7 +92,7 @@ function updateLiveColors() {
     <p style="font-size:0.8rem; color:#8c8c8c; margin:0;">Outputs an SVG.</p>
   <form action="javascript:void(buildTruePixelQR())">
     <label for="qrText">URL etc.</label>
-    <input type="text" id="qrText" value="https://svgspritebuilder.pages.dev/QR/">
+    <input type="text" id="qrText" value="https://qrsvg.bonto.run">
 
     <label for="qrEcc">Error Correction (ECC) Level</label>
     <select id="qrEcc">
@@ -212,7 +224,8 @@ function buildTruePixelQR() {
 
         const svgTemplate = `<?xml version="1.0" encoding="UTF-8" ?>
 <svg width="${totalSize}" height="${totalSize}" viewBox="0 0 ${totalSize} ${totalSize}"
-    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    role="img" aria-labelledby="QR-title" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<title id="QR-title">${escapeHTML(textData)}</title>
 <style>
 /* <![CDATA[ */
 @media screen {
