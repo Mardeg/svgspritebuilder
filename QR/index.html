@@ -83,6 +83,18 @@ function escapeHTML(str) {
         return escapeMap[match];
     });
 }
+window.addEventListener('DOMContentLoaded', async () => {
+    if (!navigator.clipboard) return;
+    try {
+        const httpPattern = /^https?:\/\//i;
+        const clipboardText = await navigator.clipboard.readText();
+        const trimmedText = clipboardText.trim();
+        if (httpPattern.test(trimmedText)) {
+            document.getElementById('qrText').value = trimmedText;;
+            buildTruePixelQR();
+        }
+    } catch {console.warn("no permissions.")}
+});
     </script>
 </head>
 <body>
