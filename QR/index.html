@@ -70,6 +70,7 @@ function updateLiveColors() {
             anchor.click();
         };
     }
+    createBookmark();
 }
 function escapeHTML(str) {
     return str.replace(/[&<>"']/g, function(match) {
@@ -83,8 +84,35 @@ function escapeHTML(str) {
         return escapeMap[match];
     });
 }
+function createBookmark() {
+    const currentParams = new URLSearchParams();
+    const standardKeys = ['qrFg', 'qrBg', 'qrSize', 'qrEcc'];
+    standardKeys.forEach(key => {
+      const element = document.getElementById(key);
+      if (element && element.value) {
+        currentParams.set(key, element.value);
+      }
+    });
+    const textElement = document.getElementById('qrText');
+    const textValue = textElement ? textElement.value : '';
+    let queryString = currentParams.toString();
+    if (textValue) {
+      queryString += `${queryString ? '&' : ''}qrText=${encodeURIComponent(textValue)}`;
+    }
+    const bookmarkUrl = `${window.location.origin}${window.location.pathname}?${queryString}`;
+    let shareLink = document.getElementById('qrShareLink');
+    if (!shareLink) {
+      shareLink = document.createElement('a');
+      shareLink.id = 'qrShareLink';
+      shareLink.target = '_blank';
+      shareLink.style.cssText = 'display: block; margin-top: 1rem; color: #3b82f6; text-decoration: underline; word-break: break-all;';
+      document.getElementById('outputArea').appendChild(shareLink);
+    }
+    shareLink.href = bookmarkUrl;
+    shareLink.textContent = 'Bookmark or share this QR configuration';
+}
 window.addEventListener('DOMContentLoaded', async () => {
-    if (!navigator.clipboard) return;
+  if (navigator.clipboard) {
     try {
         const httpPattern = /^https?:\/\//i;
         const clipboardText = await navigator.clipboard.readText();
@@ -92,8 +120,32 @@ window.addEventListener('DOMContentLoaded', async () => {
         if (httpPattern.test(trimmedText)) {
             document.getElementById('qrText').value = trimmedText;;
             buildTruePixelQR();
+            return;
         }
     } catch {}
+  }
+  if (!location.search) return;
+  const params = new URLSearchParams(location.search);
+  const config = {
+    qrText: (val) => decodeURIComponent(val),
+    qrFg: (val) => decodeURIComponent(val),
+    qrBg: (val) => decodeURIComponent(val),
+    qrSize: (val) => isNaN(Number(val)) ? null : val,
+    qrEcc: (val) => ['L', 'M', 'Q', 'H'].includes(val) ? val : null
+  };
+  Object.keys(config).forEach(key => {
+    if (params.has(key)) {
+      const rawValue = params.get(key);
+      const validatedValue = config[key](rawValue);
+      if (validatedValue !== null) {
+        const element = document.getElementById(key);
+        if (element) {
+          element.value = validatedValue;
+        }
+      }
+    }
+  });
+  buildTruePixelQR();
 });
     </script>
 </head>
@@ -280,6 +332,7 @@ function buildTruePixelQR() {
         };
 
         document.getElementById('outputArea').style.display = 'block';
+        createBookmark();
         document.querySelector('input[type="reset"]').setAttribute("style","pointer-events:auto;visibility:visible");
         
     } catch (error) {
