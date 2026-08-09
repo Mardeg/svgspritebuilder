@@ -99,9 +99,12 @@ window.addEventListener('DOMContentLoaded', async () => {
         const clipboardText = await navigator.clipboard.readText();
         const trimmedText = clipboardText.trim();
         if (httpPattern.test(trimmedText)) {
-            document.getElementById('qrText').value = trimmedText;;
-            buildTruePixelQR();
-            return;
+            const clipboardUrl = new URL(trimmedText);
+            if (clipboardUrl.hostname !== location.hostname) {
+                document.getElementById('qrText').value = trimmedText;
+                buildTruePixelQR();
+                return;
+            }
         }
     } catch {}
   }
